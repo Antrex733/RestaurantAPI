@@ -7,7 +7,7 @@ namespace RestaurantAPI
         private readonly RestaurantDBContext _dbContext;
         public RestaurantSeeder(RestaurantDBContext dBContext)
         {
-            dBContext = _dbContext;
+            _dbContext = dBContext;
         }
         public void Seed()
         {
@@ -32,6 +32,7 @@ namespace RestaurantAPI
                     Description =
                         "KFC (short for Kentucky Fried Chicken) is an American fast food restaurant chain headquartered in Louisville, Kentucky, that specializes in fried chicken.",
                     ContactEmail = "contact@kfc.com",
+                    ContactNumber = "111222333",
                     HasDelivery = true,
                     Dishes = new List<Dish>()
                     {
@@ -61,6 +62,7 @@ namespace RestaurantAPI
                     Description =
                         "McDonald's Corporation (McDonald's), incorporated on December 21, 1964, operates and franchises McDonald's restaurants.",
                     ContactEmail = "contact@mcdonald.com",
+                    ContactNumber = "444555666",
                     HasDelivery = true,
                     Address = new Address()
                     {

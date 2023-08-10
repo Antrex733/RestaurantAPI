@@ -10,9 +10,9 @@ using RestaurantAPI.Entities;
 
 namespace RestaurantAPI.Migrations
 {
-    [DbContext(typeof(RestaurantDBContextL))]
-    [Migration("20230810142758_init")]
-    partial class init
+    [DbContext(typeof(RestaurantDBContext))]
+    [Migration("20230810205833_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,6 +66,7 @@ namespace RestaurantAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("RestaurantId")

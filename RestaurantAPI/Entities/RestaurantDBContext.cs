@@ -19,6 +19,19 @@ namespace RestaurantAPI.Entities
             modelBuilder.Entity<Dish>()
                 .Property(n => n.Name)
                 .IsRequired();
+
+            //błąd więc GPT
+            modelBuilder.Entity<Dish>()
+                .Property(p => p.Price)
+                .HasPrecision(18, 2); // Przykładowa precyzja i skala
+
+            //zadanie filmik 17
+            modelBuilder.Entity<Address>()
+                .Property(c => c.City)
+                .HasMaxLength(50);
+            modelBuilder.Entity<Address>()
+                .Property(c => c.Street)
+                .HasMaxLength(50);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

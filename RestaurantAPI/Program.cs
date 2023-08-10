@@ -24,7 +24,7 @@ builder.Logging.AddNLog();  // Dodaj NLog jako dostawcê logowania
 //Tu bêdzie wszystko z klasy Startup => metoda configure service   configuration => builder.configuration, tak samo przy services
 
 builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
-builder.Services.AddControllers();//co robi??
+builder.Services.AddControllers();//co robi?? => jest od pocz¹tku
 
 builder.Services.AddDbContext<RestaurantDBContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
@@ -45,6 +45,7 @@ var app = builder.Build();
 
 var scope = app.Services.CreateScope();
 var seeder = scope.ServiceProvider.GetRequiredService<RestaurantSeeder>();
+seeder.Seed();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
