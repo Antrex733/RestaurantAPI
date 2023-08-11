@@ -23,7 +23,6 @@ builder.Logging.AddNLog();  // Dodaj NLog jako dostawcê logowania
 
 //Tu bêdzie wszystko z klasy Startup => metoda configure service   configuration => builder.configuration, tak samo przy services
 
-builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
 builder.Services.AddControllers();//co robi?? => jest od pocz¹tku
 
 builder.Services.AddDbContext<RestaurantDBContext>();
