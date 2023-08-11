@@ -11,6 +11,9 @@ using NLog.Extensions.Logging;
 using Microsoft.OpenApi.Writers;
 using RestaurantAPI;
 using RestaurantAPI.Entities;
+using System.Reflection;
+using RestaurantAPI.Services;
+using RestaurantAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +30,8 @@ builder.Services.AddControllers();//co robi?? => jest od pocz¹tku
 
 builder.Services.AddDbContext<RestaurantDBContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
-
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 
 
 
