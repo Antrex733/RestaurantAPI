@@ -34,7 +34,11 @@ builder.Services.AddScoped<RestaurantSeeder>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
+builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<TimeMeasure>();//zadanie
+builder.Services.AddScoped<IDishService, DishService>();
 
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 
 // Add services to the container.
@@ -60,9 +64,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ErrorHandlingMiddleware>();//dodanie middleware
+app.UseMiddleware<TimeMeasure>();//zadanie
 
 app.UseHttpsRedirection();
 
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Restaurant API");
+});
 
 //app.UseAuthorization();
 
