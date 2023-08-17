@@ -2,7 +2,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using NLog.Web;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,7 +13,13 @@ using RestaurantAPI.Entities;
 using System.Reflection;
 using RestaurantAPI.Services;
 using RestaurantAPI.Models;
+using RestaurantAPI.Models.Validators;
 using RestaurantAPI.Middleware;
+using Microsoft.AspNetCore.Identity;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +32,31 @@ builder.Logging.AddNLog();  // Dodaj NLog jako dostawcê logowania
 
 //Tu bêdzie wszystko z klasy Startup => metoda configure service   configuration => builder.configuration, tak samo przy services
 
-builder.Services.AddControllers();//co robi?? => jest od pocz¹tku
+var authenticationSettings = new AuthenticationSettings();
+builder.Configuration.GetSection("Athentication").Bind(authenticationSettings);
+
+builder.Services.AddSingleton(authenticationSettings);
+
+builder.Services.AddAuthentication(option =>
+{
+    option.DefaultAuthenticateScheme = "Bearer";
+    option.DefaultScheme = "Bearer";
+    option.DefaultChallengeScheme = "Bearer";
+}).AddJwtBearer(cfg =>
+{
+    cfg.RequireHttpsMetadata = false;
+    cfg.SaveToken = true;
+    cfg.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = authenticationSettings.JwtIssuer,
+        ValidAudience = authenticationSettings.JwtIssuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
+    };
+});
+
+//builder.Services.AddControllers().AddFluentValidation();//co robi?? => jest od pocz¹tku
+//to samo co .AddControllers().AddFluentValidation()
+builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 
 builder.Services.AddDbContext<RestaurantDBContext>();
 builder.Services.AddScoped<RestaurantSeeder>();
@@ -40,6 +69,9 @@ builder.Services.AddScoped<IDishService, DishService>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
+builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -65,6 +97,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ErrorHandlingMiddleware>();//dodanie middleware
 app.UseMiddleware<TimeMeasure>();//zadanie
+
+app.UseAuthentication();
 
 app.UseHttpsRedirection();
 
