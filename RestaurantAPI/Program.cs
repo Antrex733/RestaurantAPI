@@ -20,6 +20,9 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using RestaurantAPI.Authorization;
+using Microsoft.AspNetCore.Server.IIS.Core;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +56,14 @@ builder.Services.AddAuthentication(option =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
     };
 });
+builder.Services.AddAuthorization(option =>
+{
+    option.AddPolicy("HasNationality", builder => builder.RequireClaim("Nationality"));
+    option.AddPolicy("Atleast20", builder => builder.AddRequirements(new MinimumAgeRequirement(20)));
+});
+
+builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
 
 //builder.Services.AddControllers().AddFluentValidation();//co robi?? => jest od pocz¹tku
 //to samo co .AddControllers().AddFluentValidation()
@@ -109,6 +120,8 @@ app.UseSwaggerUI(c =>
 });
 
 //app.UseAuthorization();
+
+app.UseAuthorization();
 
 app.MapControllers();
 
