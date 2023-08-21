@@ -1,4 +1,5 @@
-﻿using RestaurantAPI.Exceptions;
+﻿using AutoMapper.Internal;
+using RestaurantAPI.Exceptions;
 
 namespace RestaurantAPI.Middleware
 {
@@ -15,6 +16,11 @@ namespace RestaurantAPI.Middleware
 			{
 				await next.Invoke(context);
 			}
+            catch(ForbidException forbidException)
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.WriteAsync(forbidException.Message);
+            }
             catch(BadRequestException badRequest)
             {
                 context.Response.StatusCode = 400;
