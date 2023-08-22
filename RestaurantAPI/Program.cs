@@ -112,7 +112,6 @@ app.UseMiddleware<ErrorHandlingMiddleware>();//dodanie middleware
 app.UseMiddleware<TimeMeasure>();//zadanie
 
 app.UseAuthentication();
-
 app.UseHttpsRedirection();
 
 app.UseSwagger();
@@ -121,10 +120,11 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Restaurant API");
 });
 
-//app.UseAuthorization();
-
+app.UseRouting();
 app.UseAuthorization();
-
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();
