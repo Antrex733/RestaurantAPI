@@ -22,7 +22,7 @@ namespace RestaurantAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "Atleast20")]
+        [Authorize(Policy = "TwoRestaurantsCreated")]
         public ActionResult<IEnumerable<RestaurantDto>> GetAll()
         {
             var restaurantsDtos = _restaurantService.GetAllRestaurants();
@@ -42,22 +42,21 @@ namespace RestaurantAPI.Controllers
         [Authorize(Roles = "Admin,Manager")]
         public ActionResult<int> CreateRestaurant([FromBody] CreateRestaurantDto dto)
         {
-            var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
-            var Id = _restaurantService.Create(dto, userId);
+            var Id = _restaurantService.Create(dto);
 
             return Created($"/api/restaurant/{Id}", null);
         }
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] int id)
         {
-            _restaurantService.Delete(id, User);
+            _restaurantService.Delete(id);
 
             return NoContent();
         }
         [HttpPut("{id}")]
         public ActionResult Put([FromRoute] int id, [FromBody] UpdateRestaurantDto dto)
         {
-            _restaurantService.Put(id, dto, User);
+            _restaurantService.Put(id, dto);
 
             return Ok();
         }

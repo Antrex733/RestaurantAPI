@@ -56,6 +56,14 @@ builder.Services.AddAuthentication(option =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
     };
 });
+builder.Services.AddAuthorization(option =>
+{
+    option.AddPolicy("AtLeast20", builder => builder.AddRequirements(new MinimumAgeRequirement(20)));
+    option.AddPolicy("TwoRestaurantsCreated", builder => 
+        builder.AddRequirements(new MinimumRestaurantsCreatedRequirement(2)));
+});
+
+
 
 //builder.Services.AddControllers().AddFluentValidation();//co robi?? => jest od pocz¹tku
 //to samo co .AddControllers().AddFluentValidation()
@@ -74,6 +82,9 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
+builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>();
 
 // Add services to the container.
 builder.Services.AddControllers();

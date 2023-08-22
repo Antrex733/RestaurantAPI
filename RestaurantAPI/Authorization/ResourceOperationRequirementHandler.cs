@@ -6,8 +6,8 @@ namespace RestaurantAPI.Authorization
 {
     public class ResourceOperationRequirementHandler : AuthorizationHandler<ResourceOperationRequirement, Restaurant>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ResourceOperationRequirement requirement,
-            Restaurant restaurant)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, 
+            ResourceOperationRequirement requirement, Restaurant restaurant)
         {
             if (requirement.resourceOperation == ResourceOperation.Read ||
                 requirement.resourceOperation == ResourceOperation.Create)

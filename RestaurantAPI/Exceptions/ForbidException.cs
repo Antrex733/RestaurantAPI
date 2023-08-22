@@ -2,9 +2,6 @@
 {
     public class ForbidException : Exception
     {
-        public ForbidException(string massage) : base(massage) 
-        {
-            
-        }
+
     }
 }
