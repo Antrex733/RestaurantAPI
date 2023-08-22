@@ -50,14 +50,14 @@ namespace RestaurantAPI.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] int id)
         {
-            _restaurantService.Delete(id);
+            _restaurantService.Delete(id, User);
 
             return NoContent();
         }
         [HttpPut("{id}")]
         public ActionResult Put([FromRoute] int id, [FromBody] UpdateRestaurantDto dto)
         {
-            _restaurantService.Put(id, dto);
+            _restaurantService.Put(id, dto, User);
 
             return Ok();
         }
