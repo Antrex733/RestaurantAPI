@@ -2,6 +2,7 @@
 using RestaurantAPI.Entities;
 using RestaurantAPI.Models;
 using System.Security.Claims;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace RestaurantAPI.Services
 {
@@ -9,7 +10,7 @@ namespace RestaurantAPI.Services
     {
         int Create(CreateRestaurantDto dto);
         RestaurantDto GetById(int RestaurantId);
-        IEnumerable<RestaurantDto> GetAllRestaurants();
+        PagedResult<RestaurantDto> GetAllRestaurants(RestaurantQuery query);
         void Delete(int id);
         void Put([FromRoute] int id, [FromBody] UpdateRestaurantDto dto);
     }

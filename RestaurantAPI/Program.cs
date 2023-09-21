@@ -80,11 +80,22 @@ builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+builder.Services.AddScoped<IValidator<RestaurantQuery>, RestaurantQueryValidator>();
 builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAuthorizationHandler, MinimumAgeRequirementHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, MinimumRestaurantsCreatedHendler>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontEndClient", currentBuilder =>
+    currentBuilder.AllowAnyMethod()
+    .AllowAnyHeader()
+    .WithOrigins(builder.Configuration["AllowedOrgins"])//domena metody, która bêdzie wysy³aæ zapytania
+    );
+});
+
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -99,6 +110,9 @@ var app = builder.Build();
 
 var scope = app.Services.CreateScope();
 var seeder = scope.ServiceProvider.GetRequiredService<RestaurantSeeder>();
+app.UseResponseCaching();
+app.UseStaticFiles();
+app.UseCors("FrontEndClient");//nazwa polityki
 seeder.Seed();
 
 // Configure the HTTP request pipeline.

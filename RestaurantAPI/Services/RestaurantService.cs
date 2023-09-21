@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using RestaurantAPI.Authorization;
 using RestaurantAPI.Entities;
 using RestaurantAPI.Exceptions;
 using RestaurantAPI.Models;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace RestaurantAPI.Services
@@ -40,13 +42,31 @@ namespace RestaurantAPI.Services
             var result = _mapper.Map<RestaurantDto>(restaurant);
             return result;
         }
-        public IEnumerable<RestaurantDto> GetAllRestaurants()
+        public PagedResult<RestaurantDto> GetAllRestaurants(RestaurantQuery query)
         {
-            var restaurants = _dbContext
+            var baseQuery = _dbContext
                 .Restaurants
                 .Include(r => r.Address)
                 .Include(r => r.Dishes)
-                .ToList();
+                .Where(r => query.SearchPhrase == null
+                    || (r.Name.ToLower().Contains(query.SearchPhrase.ToLower())
+                    || r.Description.ToLower().Contains(query.SearchPhrase.ToLower())));
+
+            if (!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelector = new Dictionary<string, Expression<Func<Restaurant, object>>>
+                {
+                    {nameof(Restaurant.Name), r => r.Name },
+                    {nameof(Restaurant.Description), r => r.Description },
+                    {nameof(Restaurant.Category), r => r.Category },
+                };
+
+                var selectedColumn = columnsSelector[query.SortBy];
+
+                baseQuery = query.SortDirection == SortDirection.ASC ?
+                    baseQuery.OrderBy(selectedColumn)
+                    : baseQuery.OrderByDescending(selectedColumn);
+            }
             /* bez autoMapera
             var restaurantsDtos = restaurants.Select(r => new RestaurantDto()
             {
@@ -56,9 +76,18 @@ namespace RestaurantAPI.Services
 
             });*/
 
+            var restaurants = baseQuery
+                .Skip(query.PageSize * (query.PageNumber - 1))
+                .Take(query.PageSize)
+                .ToList();
+
+            var totalIteamsCount = baseQuery.Count();
+
             var restaurantsDtos = _mapper.Map<List<RestaurantDto>>(restaurants);
 
-            return restaurantsDtos;
+            var result = new PagedResult<RestaurantDto>(restaurantsDtos, totalIteamsCount, query.PageSize, query.PageNumber);
+
+            return result;
         }
         public int Create(CreateRestaurantDto dto)
         {
